@@ -49,7 +49,7 @@ https://m.wikihow.com/Install-FFmpeg-on-Windows
 
 ### Linux: 
 
-`sudo apt install ffmpeg`
+  `sudo apt install ffmpeg`
 
 ### Mac OS:
 
