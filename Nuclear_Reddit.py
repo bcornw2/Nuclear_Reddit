@@ -76,7 +76,6 @@ def getImages():
 
 def downloadFromUrl(filename, object_type):
     username = uname
-    # TODO - variable for username
     print(f"Saving {object_type}s to {filename}")
     count = 0
     path = os.path.join(location, filename)
@@ -240,6 +239,7 @@ def getSavedPosts():
         for comment in comment_arr:
             file.write(comment)
 
+
 def initializeReddit(client_id, secret, uname, passwd):
     global reddit
     reddit = praw.Reddit(client_id=client_id,
@@ -247,6 +247,7 @@ def initializeReddit(client_id, secret, uname, passwd):
                          username=uname,
                          password=passwd,
                          user_agent='USER_AGENT')
+
 
 def ini():
     print(
@@ -317,12 +318,70 @@ def testAccount(test_reddit):
 
     except Exception as err:
         print(f"{bcolors.FAIL} Testing has failed. Please verify credentials.  Error: " + str(err) + bcolors.ENDC)
+        if "401" in str(err):
+            print(f"{bcolors.FAIL}\n INCORRECT CREDENTIALS - try again.")
+            ini()
         return False
 
 
 ### ===   DELETE METHODS   === ###
+def editCommentString():
+    default_comment_sting = "`NOTE:`  The content of this comment was removed, as Reddit has devolved into an authoritarian " \
+                            "facebook-tier garbage site, rife with power-hungry mods and a psychopathic userbase. \n\nI " \
+                            "have migrated to [Ruqqus](https://ruqqus.com), an open-source alternative to Reddit, and you should too!"
+    footer = "\n\n ___________________________________________ \n\n^^This ^^action ^^was ^^performed ^^automatically ^^and ^^easily ^^by [^^Nuclear ^^Reddit ^^Remover ](https://github.com/bcornw2/Nuclear_Reddit)"
+    print(
+        "This is the default comment-replacement: " + bcolors.WARNING + default_comment_sting + " " + footer + bcolors.ENDC + "\n")
+    time.sleep(0.5)
+    choice = input(f"{bcolors.OKBLUE}Would you like to change this? [Y/n]: {bcolors.ENDC}")
+    choice.lower()
+    if choice.startswith("y"):
+        comment_replacement = input(
+            f"{bcolors.ENDC}Enter here what you would like all of your comments to say (use \"\\n\" instead of Enter): ")
+        time.sleep(0.5)
+        print("Your comment:\n\n")
+        print(f"{bcolors.WARNING}{comment_replacement}\n{footer}{bcolors.ENDC}")
+        print("\n(You cannot remove the footer.)")
+        comment_replacement = comment_replacement + footer
+    else:
+        comment_replacement = default_comment_sting + footer
+    choice = input("\nDoes this look good? \n" + bcolors.WARNING + comment_replacement + bcolors.ENDC + "\n\n[Y/n]: ")
+    choice.lower()
+    if choice == "y":
+        editAllComments(comment_replacement)
+    else:
+        print("Re-try comment edit: ")
+        editCommentString(comment_replacement)
+
+
+## TODO - can only populate comments_to_delete array if archival runs...
+##      maybe I can decouple and make the array fill a separate process from archival...
+
+def editAllComments(comment_replacement):
+    count = 1
+    for comment_id in comments_to_delete[:10]:
+        comment = reddit.comment(comment_id)
+        try:
+            comment.edit(comment_replacement)
+            count += 1
+            print("deleted comment: " + comment_id)
+        except Exception as err:
+            print("ERROR: " + str(err))
+    print("Edited COMMENT count: " + str(count))
+
 
 def deleteItAll():
+    print(" === Menu ===")
+    time.sleep(1)
+    print()
+    choice = input("""
+        1.) Edit all comments
+        2.) Delete all comments
+        3.) Delete all submission
+    
+    """)
+    if choice == "1":
+        editCommentString()
     print(f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\n\n\tWARNING{bcolors.ENDC}")
     choice = input(
         f"{bcolors.WARNING}\nDo you want to delete everything? This will delete all posts, comments, upvote history, "
@@ -365,7 +424,7 @@ def deleteSubmissions():
             print("deleted submission: " + submission_id)
         except Exception as err:
             print("ERROR: " + str(err))
-    print("Deleted SUBMISSION cont" + count)
+    print("Deleted SUBMISSION cont" + str(count))
 
 
 def deleteComments():
@@ -378,7 +437,7 @@ def deleteComments():
             print("deleted comment: " + comment_id)
         except Exception as err:
             print("ERROR: " + str(err))
-    print("Deleted COMMENT count: " + count)
+    print("Deleted COMMENT count: " + str(count))
 
 
 def main():
@@ -424,8 +483,8 @@ def main():
         print("Directory already exists. Proceeding.")
     save_account_metadata()
     choice = input(
-        f"{bcolors.OKBLUE}   (To skip ahead to the deletion process, and bypass the archival process, enter 'SKIP ARCHIVAL' here. Otherwise, press Enter:  {bcolors.ENDC} ")
-    if choice is 'SKIP ARCHIVAL':
+        f"{bcolors.OKBLUE}   (To skip ahead to the deletion/editing process, and bypass the archival process, enter 'SKIP ARCHIVAL' here. Otherwise, press Enter:  {bcolors.ENDC} ")
+    if choice == 'SKIP ARCHIVAL':
         deleteItAll()
     else:
         #  getSavedPosts()
