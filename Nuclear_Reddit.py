@@ -84,7 +84,7 @@ def downloadFromUrl(filename, object_type):
     while True:
         new_url = url.format(object_type, username) + str(previous_epoch)
         json = requests.get(new_url, headers={'User-Agent': "Post downloader"})
-        time.sleep(1)
+        time.sleep(1.5)
         json_data = json.json()
         if 'data' not in json_data:
             break
@@ -101,7 +101,6 @@ def downloadFromUrl(filename, object_type):
                     handle.write(" : ")
                     handle.write(datetime.datetime.fromtimestamp(object['created_utc']).strftime("%Y-%m-%d %H:%M:%S"))
                     handle.write("\nComment in: /r/" + str(object['subreddit']))
-                    #  handle.write("\n
                     handle.write("\n")
                     text = object['body']
                     textASCII = text.encode(encoding='ascii', errors='ignore').decode()
@@ -250,19 +249,34 @@ def initializeReddit(client_id, secret, uname, passwd):
 
 
 def ini():
-    print(
-        "\nTo get started, review the documentation on https://github.com/bcornw2/Nuclear_Reddit to find or create "
-        "your Reddit CLIENT_ID and SECRET")
-    reddit_client_id = input(bcolors.WARNING + "\nEnter Client ID here: " + bcolors.ENDC)
-    reddit_secret = input(bcolors.WARNING + "\nEnter Secret here: " + bcolors.ENDC)
     reddit_uname = input(bcolors.WARNING + "\nEnter Reddit username here (omit the /u/): " + bcolors.ENDC)
-    print(
-        bcolors.ENDC + "\nNote: Your password is not saved. If you're sketched out, review the code at "
-                       "https://github.com/bcornw2/Nuclear_Reddit" + bcolors.ENDC)
-    time.sleep(1)
-    reddit_password = input(bcolors.WARNING + "\nEnter Reddit password here: " + bcolors.ENDC)
-    print(f"{bcolors.HEADER} \nTesting Reddit access now...")
-    print(f"{bcolors.ENDC} ")
+    with open("verified_accounts.txt", "r") as file:
+        verified_accounts = file.read().splitlines()
+        print("verified: " + str(verified_accounts))
+    if reddit_uname in verified_accounts:
+        print("User: " + reddit_uname + " has already authenticated. Proceeding...")
+        try:
+            print("password: " + verified_accounts[1])
+            print("client ID: " + verified_accounts[2])
+            print("secret: " + verified_accounts[3])
+        except Exception as err:
+            print("Error: " + str(err))
+            print("Index is out of bounds - please enter in your credentials again.")
+            ini()
+    else:
+        print(
+                bcolors.ENDC + "\nNote: Your password is not uploaded anywhere. It is saved only to \"verified_accounts.txt\". If you want to review the code, find it at "
+                           "https://github.com/bcornw2/Nuclear_Reddit" + bcolors.ENDC)
+        time.sleep(0.5)
+        reddit_password = input(bcolors.WARNING + "\nEnter Reddit password here: " + bcolors.ENDC)
+        print(
+                "\nTo get started, review the documentation on https://github.com/bcornw2/Nuclear_Reddit to find or create "
+                "your Reddit CLIENT_ID and SECRET")
+        reddit_client_id = input(bcolors.WARNING + "\nEnter Client ID here: " + bcolors.ENDC)
+        reddit_secret = input(bcolors.WARNING + "\nEnter Secret here: " + bcolors.ENDC)
+
+        print(f"{bcolors.HEADER} \nTesting Reddit access now...")
+        print(f"{bcolors.ENDC} ")
 
     global client_id
     global secret
@@ -305,11 +319,14 @@ def testAccount(test_reddit):
     try:
         title = "test_post"
         global uname
+        global passwd
+        global client_id
+        global secret
         test_reddit.subreddit("nuclear_reddit").submit(title, selftext="test post to verify access")
         print(f"{bcolors.OKGREEN}Reddit account linking is successful!{bcolors.ENDC}")
         verified_accounts.append(uname)
         with open("verified_accounts.txt", "a") as file:
-            file.write(uname + "\n")
+            file.write(uname + "\n" + passwd + "\n" + client_id + "\n" + secret + "\n")
         return True
     #  except RateLimitException as err:
     #  allow exceptions for rate limits to still be positive
@@ -359,7 +376,7 @@ def editCommentString():
 
 def editAllComments(comment_replacement):
     count = 1
-    for comment_id in comments_to_delete[:10]:
+    for comment_id in comments_to_delete[:1]:
         comment = reddit.comment(comment_id)
         try:
             comment.edit(comment_replacement)
@@ -441,6 +458,8 @@ def deleteComments():
 
 
 def main():
+    with open("verified_accounts.txt", "a") as file:
+        file.write("")
     print(bcolors.OKBLUE + "Nuclear Reddit Destroyer - archives and wipes all Reddit history." + bcolors.ENDC)
     time.sleep(1)
     with open("verified_accounts.txt", "a") as file:
@@ -476,6 +495,7 @@ def main():
     #    location = "C:/Temp/Nuclear_Reddit"
     if not os.path.exists(location):
         try:
+            print("Creating directory at " + location + "...")
             os.mkdir(location)
         except Exception as err:
             print("ERROR: " + str(err))
@@ -487,7 +507,7 @@ def main():
     if choice == 'SKIP ARCHIVAL':
         deleteItAll()
     else:
-        #  getSavedPosts()
+        getSavedPosts()
         #  save_comments()
         #  save_content()
         downloadFromUrl("submissions.txt", "submission")
