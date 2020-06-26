@@ -1,6 +1,5 @@
 # Nuclear Reddit Destroyer
-[![Build Status]In Progress]
-[![Python version](https://img.shields.io/badge/python-3.x-brightgreen.svg)]
+![Python version](https://img.shields.io/badge/python-3.x-brightgreen.svg)
 
 ### Archive all your Reddit content, then delete everything.
 
