@@ -1,9 +1,9 @@
-# Nuclear Reddit Destroyer
+# Nuclear Reddit Remover
 ![Python version](https://img.shields.io/badge/python-3.x-brightgreen.svg)
 
 ### Archive all your Reddit content, then delete everything.
 
-#### When you delete an account on Reddit, your account goes away, but your content remains. Every post, comment, and upvote sticks around long after you delete it, and using tools like ceddit, unreddit, or [removeddit](https://removereddit.com). With the current climate of internet doxxing it is wise to clear any content that may lead to people identifying who you are by what you've posted. Nuclear Reddit Destroyer fixes that, and you won't even have to miss the things you've done. Nuclear Reddit Destroyer is a free and open-source tool that anyone can use to completely wipe away their Reddit account to prevent doxxing, identity theft, and snooping.
+#### When you delete an account on Reddit, your account goes away, but your content remains. Every post, comment, and upvote sticks around long after you delete it, and using tools like ceddit, unreddit, or [removeddit](https://removereddit.com), people can still find out who posted it. With the current climate of internet doxxing it is wise to clear any content that may lead to people identifying who you are by what you've posted. Nuclear Reddit Remover fixes that, and you won't even have to miss the things you've done. Nuclear Reddit Destroyer is a free and open-source tool that anyone can use to completely wipe away their Reddit account to prevent doxxing, identity theft, and snooping.
 
 
 ## Features
