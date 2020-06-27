@@ -76,7 +76,7 @@ def getImages():
 
 def downloadFromUrl(filename, object_type):
     username = uname
-    print(f"Saving {object_type}s to {filename}")
+    print(f"Saving {object_type}s to {filename}... (Please wait)")
     count = 0
     path = os.path.join(location, filename)
     handle = open(path, "w")
@@ -85,7 +85,11 @@ def downloadFromUrl(filename, object_type):
         new_url = url.format(object_type, username) + str(previous_epoch)
         json = requests.get(new_url, headers={'User-Agent': "Post downloader"})
         time.sleep(1.5)
-        json_data = json.json()
+        #print(str(json))
+        try:
+            json_data = json.json()
+        except Exception as err:
+            print(f"{bcolors.FAIL}ERROR: {str(err)}{bcolors.ENDC}")
         if 'data' not in json_data:
             break
         objects = json_data['data']
@@ -254,11 +258,12 @@ def ini():
         verified_accounts = file.read().splitlines()
         print("verified: " + str(verified_accounts))
     if reddit_uname in verified_accounts:
+        index = verified_accounts.index(reddit_uname)
         print("User: " + reddit_uname + " has already authenticated. Proceeding...")
         try:
-            print("password: " + verified_accounts[1])
-            print("client ID: " + verified_accounts[2])
-            print("secret: " + verified_accounts[3])
+            reddit_password = verified_accounts[index + 1]
+            reddit_client_id = verified_accounts[index + 2]
+            reddit_secret = verified_accounts[index + 3]
         except Exception as err:
             print("Error: " + str(err))
             print("Index is out of bounds - please enter in your credentials again.")
@@ -292,25 +297,23 @@ def ini():
                               username=uname,
                               password=passwd,
                               user_agent='USER_AGENT')
-
+    print("username  = /u/" + uname)
+    print("password  = " + passwd)
     print("client_id = " + client_id)
     print("secret    = " + secret)
-    print("username  = " + uname)
-    print("password  = " + passwd)
+
     choice = input(bcolors.OKBLUE + "Does this look right? [Y/n]: " + bcolors.ENDC)
     choice.lower()
     if choice is 'y' or choice is 'ye' or choice is 'yes':
         pass
     else:
         ini()
-    with open("verified_accounts.txt", "r") as file:
-        verified_accounts = file.read().splitlines()
     if (testAccount(test_reddit) or uname in verified_accounts):
         print(f"{bcolors.OKGREEN}\nContinuing...{bcolors.ENDC}")
         initializeReddit(client_id, secret, uname, passwd)
     else:
         print(
-            f"{bcolors.FAIL}\nAccount linking has failed. You may have entered your credentials inccorectly. Please "
+            f"{bcolors.FAIL}\n\nAccount linking has failed. You may have entered your credentials inccorectly. Please "
             f"verify that your username, password, client ID, and secret are accurate.\n" + bcolors.ENDC)
         ini()
 
@@ -322,6 +325,10 @@ def testAccount(test_reddit):
         global passwd
         global client_id
         global secret
+        if passwd == '': passwd = 'ERROR'
+        if client_id == '': client_id = 'ERROR'
+        if secret == '': secret = 'ERROR'
+
         test_reddit.subreddit("nuclear_reddit").submit(title, selftext="test post to verify access")
         print(f"{bcolors.OKGREEN}Reddit account linking is successful!{bcolors.ENDC}")
         verified_accounts.append(uname)
@@ -376,12 +383,12 @@ def editCommentString():
 
 def editAllComments(comment_replacement):
     count = 1
-    for comment_id in comments_to_delete[:1]:
+    for comment_id in comments_to_delete:
         comment = reddit.comment(comment_id)
         try:
             comment.edit(comment_replacement)
             count += 1
-            print("deleted comment: " + comment_id)
+            print("Edited comment: " + comment_id)
         except Exception as err:
             print("ERROR: " + str(err))
     print("Edited COMMENT count: " + str(count))
@@ -391,39 +398,72 @@ def deleteItAll():
     print(" === Menu ===")
     time.sleep(1)
     print()
-    choice = input("""
-        1.) Edit all comments
-        2.) Delete all comments
-        3.) Delete all submission
+    choice_number = input(f"""
+        1.) {bcolors.BOLD}Edit{bcolors.ENDC} all comments, {bcolors.BOLD}delete{bcolors.ENDC} all submissions.
+        2.) {bcolors.BOLD}Edit{bcolors.ENDC} all comments, leave all submissions intact.
+        3.) {bcolors.BOLD}Delete{bcolors.ENDC} all comments, {bcolors.BOLD}delete{bcolors.ENDC} all submissions.
+        4.) {bcolors.BOLD}Delete{bcolors.ENDC} all comments, leave all submissions intact.
+        5.) Exit Program.
     
-    """)
-    if choice == "1":
+    >>: """)
+    if choice_number == "1":
+        ##edit comments, delete submissions
+        print("Opening comment editor...")
+        time.sleep(0.5)
         editCommentString()
-    print(f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\n\n\tWARNING{bcolors.ENDC}")
-    choice = input(
-        f"{bcolors.WARNING}\nDo you want to delete everything? This will delete all posts, comments, upvote history, "
-        f"messages, and Reddit metadata.\nPlease review the data already collected in " + location + " before you "
-                                                                                                     "choose to "
-                                                                                                     "delete." +
-        bcolors.ENDC + " Proceed? [Y/n]: ")
-    choice.lower()
-    print(bcolors.ENDC + "")
-    if choice.startswith('y'):
-        time.sleep(1)
+        print("\nAll comments have been edited.")
+        print(f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\n\n\tWARNING{bcolors.ENDC}")
         choice = input(
-            f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\nWARNING. THIS ACTION WILL DELETE EVERYTHING.{bcolors.ENDC}\nIN ORDER TO PROCEED, ENTER: {bcolors.FAIL} DELETE [USERNAME]: {bcolors.ENDC}")
-        print("USERNAME USERNAME:" + uname)
+            f"{bcolors.WARNING}\nDo you want to delete all submissions? This will delete all posts, and the comments "
+            f"underneath them. This information has been backed up to an offline copy at \'submissions.txt\". \nPlease "
+            f"review the data already collected in " + location + " before you choose to delete." +
+            bcolors.ENDC + " Proceed? [Y/n]: ")
+        choice.lower()
+        if choice.startswith('y'):
+            deleteSubmissions()
+
+        print(bcolors.ENDC + "")
+
+    elif choice_number == "2":
+        ##Edit all comments, leave submissions intact
+        print("Opening comment editor...")
+        time.sleep(0.5)
+        editCommentString()
+        print("\nAll comments have been edited.")
+        print(f"{bcolors.OKBLUE}You have elected to leave your submissions as they are. No submissions have been deleted from " + uname + ". Thank you for using this program." + bcolors.ENDC)
+
+    elif choice_number == '3':
+    ##delete comments, delete submissions
+        choice = input(
+            f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\nWARNING. THIS ACTION WILL DELETE EVERY COMMENT, "
+            f"AND EVERY SUBMISSION. THIS CAN NOT BE UNDONE. We do, however, suggest that you edit your comments "
+            f"instead of deleting them. To cancel, enter \'CANCEL\'.{bcolors.ENDC}\n TO PROCEED, "
+            f"ENTER: {bcolors.FAIL} DELETE [USERNAME]: {bcolors.ENDC}")
         uname.upper()
+        print("uname: " + uname)
         delete_string = "DELETE " + uname.upper()
-        #    print("DELETE STRING: " + delete_string)
-        #    print("CHOICE: " + choice)
-        #    print("CHOICE IS DELETE_STRING: " + str(choice is delete_string))
+        print("delete_string " + delete_string)
         if choice == delete_string:
-            #       print("CHOICE: " + choice)
-            #       print(20*"TRUE\n")
             deleteComments()
             deleteSubmissions()
-            print("Everything was deleted. Thank you for playing!")
+            print("Every comment and every submission was deleted. Thank you!")
+        else:
+            deleteItAll()
+    elif choice_number == '4':
+        ##delete comments, leave submissions
+        time.sleep(0.5)
+        choice = input(f"{bcolors.FAIL}{bcolors.BOLD}{bcolors.UNDERLINE}\nWARNING. THIS ACTION WILL DELETE EVERY "
+                       f"COMMENT. THIS CANNOT BE UNDONE, AND COMMENTS CANNOT BE EDITED LATER. We do, however, "
+                       f"suggest that you edit your comments instead of deleting them. To cancel, enter \'CANCEL\'."
+                       f"{bcolors.ENDC}\nTO PROCEED, ENTER: {bcolors.FAIL} DELETE [USERNAME]: {bcolors.ENDC}")
+        uname.upper()
+        delete_string = "DELETE " + uname.upper()
+        if choice == delete_string:
+            deleteComments()
+            print("Every coment was deleted. All submissions remain intact. Thank you!")
+        else:
+            deleteItAll()
+
     else:
         print(
             f"{bcolors.OKBLUE}Nothing was deleted. Please return to this program when you are ready to wipe it all "
@@ -434,14 +474,14 @@ def deleteItAll():
 def deleteSubmissions():
     count = 1
     for submission_id in submissions_to_delete:
-        submission = reddit.comment(submission_id)
+        submission = reddit.submission(submission_id)
         try:
-            #      submission.delete()
+            submission.delete()
             count += 1
             print("deleted submission: " + submission_id)
         except Exception as err:
             print("ERROR: " + str(err))
-    print("Deleted SUBMISSION cont" + str(count))
+    print("Deleted SUBMISSION count: " + str(count))
 
 
 def deleteComments():
@@ -449,7 +489,7 @@ def deleteComments():
     for comment_id in comments_to_delete:
         comment = reddit.comment(comment_id)
         try:
-            #     comment.delete()
+            comment.delete()
             count += 1
             print("deleted comment: " + comment_id)
         except Exception as err:
@@ -470,58 +510,58 @@ def main():
     if platform == "linux" or platform == "linux2":
         #
         location = input(
-            "(Linux) Enter local directory to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit]: " + bcolors.ENDC)
+            "(Linux) Enter local directory to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit/]: " + bcolors.ENDC)
         print(f"{bcolors.ENDC}")
     elif platform == "darwin":
         #
         location = input(
-            "(MacOS) Enter local directory to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit]: " + bcolors.ENDC)
+            "(MacOS) Enter local directory to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit/]: " + bcolors.ENDC)
         print(f"{bcolors.ENDC}")
     elif platform == "win32":
         #
         location == input(
-            "(Windows) Enter local folder to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit]: " + bcolors.ENDC)
+            "(Windows) Enter local folder to save your content to. " + bcolors.WARNING + "[default: " + home + "/Nuclear_Reddit/]: " + bcolors.ENDC)
 
     if location is '':
         location = os.path.join(home, "Nuclear_Reddit")
         print("Working directory: " + location)
+    if "Nuclear_Reddit" not in location:
+        location = os.path.join(location, "Nuclear_Reddit")
 
-    # location = input("Enter local directory to save your content to [default: /tmp/Nuclear_Reddit/]")
-    #  if location is '' and (platform == "linux" or platform == "linux2"):
-    #    location = "/tmp/Nuclear_Reddit"
-    #  if location is '' and (platorm == "dawin"):
-    #    location = "/tmp/Nuclear_Reddit"
-    #  if location is ''  and (platform == "win32"):
-    #    location = "C:/Temp/Nuclear_Reddit"
+
     if not os.path.exists(location):
         try:
             print("Creating directory at " + location + "...")
-            os.mkdir(location)
+            os.makedirs(location)
         except Exception as err:
             print("ERROR: " + str(err))
     else:
         print("Directory already exists. Proceeding.")
+
+
+
+    #if not os.path.exists(location):
+   #     os.makedirs(location)
+
+
     save_account_metadata()
-    choice = input(
-        f"{bcolors.OKBLUE}   (To skip ahead to the deletion/editing process, and bypass the archival process, enter 'SKIP ARCHIVAL' here. Otherwise, press Enter:  {bcolors.ENDC} ")
-    if choice == 'SKIP ARCHIVAL':
-        deleteItAll()
-    else:
-        getSavedPosts()
+
+        #getSavedPosts()
         #  save_comments()
         #  save_content()
-        downloadFromUrl("submissions.txt", "submission")
-        print(f"{bcolors.OKGREEN}Submissions download complete.{bcolors.ENDC}")
-        downloadFromUrl("comments.txt", "comment")
-        print(f"{bcolors.OKGREEN}Comments download complete.{bcolors.ENDC}")
-        print(f"{bcolors.OKBLUE}Saving images submissions...{bcolors.ENDC}")
-        #   getImages()
-        print(f"{bcolors.OKGREEN}Images saved successfully.{bcolors.ENDC}")
-        print(f"{bcolors.OKBLUE}Saving videos...{bcolors.OKBLUE}")
-        #   saveVideos()
-        print(f"{bcolors.OKGREEN}Videos saved successfully{bcolors.ENDC}")
-        print(f"{bcolors.OKGREEN}submitted images download complete.{bcolors.ENDC}")
-        deleteItAll()
+    downloadFromUrl("submissions.txt", "submission")
+    print(f"{bcolors.OKGREEN}Submissions download complete.{bcolors.ENDC}")
+    downloadFromUrl("comments.txt", "comment")
+    print(f"{bcolors.OKGREEN}Comments download complete.{bcolors.ENDC}")
+    print(f"{bcolors.OKBLUE}Saving images submissions...{bcolors.ENDC}")
+    #   getImages()
+    print(f"{bcolors.OKGREEN}Images saved successfully.{bcolors.ENDC}")
+    print(f"{bcolors.OKBLUE}Saving videos...{bcolors.OKBLUE}")
+    #   saveVideos()
+    print(f"{bcolors.OKGREEN}Videos saved successfully{bcolors.ENDC}")
+    print(f"{bcolors.OKGREEN}submitted images download complete.{bcolors.ENDC}")
+    deleteItAll()
+    print(f"{bcolors.OKGREEN}Thank you for using Nuclear Reddit Remover. If you enjoyed this program, please consider leaving feedback at https://github.com/bcornw2/Nuclear_Reddit \nAlso, consider donating to Ruqqus via https://ruqqus.com/help/donate to facilitate the construction of a censorship-free internet.\n   Thank you!")
 
 
 if __name__ == "__main__":
