@@ -25,9 +25,11 @@ To actually run the script, if you are not familiar with Git or cloning Git repo
 Configuration is easy. All you need is Python 3 installed on a Windows, Linux, or Mac computer. 
 
 MacOS already has Python3 installed by default.
+
 Windows users can install Python by downloading the package from here: https://www.python.org/downloads/windows/
 * Windows users will need to install Python 3.7 or 3.8, then find the directory where it installed (`C:/Users/$your_username/AppData/Local/Programs/Python/Python38`) and copy this filepath, then add it to their PATH, by right clicking on `This PC` -> `Advanced System Settings` -> `Environment Variables` -> click on the `Path` field under "User Variables for $Your_Username" -> `New` -> then paste the filepath into the new field at the bottom. You will need to do this also for `pip`, which is found in the same directory, but go to `/Scripts/pip.exe`.
 * So you are adding `C:/Users/$your_username/AppData/Local/Programs/Python/Python38`  and  `C:/Users/$your_username/AppData/Local/Programs/Python/Python38/Scripts/pip.exe` to your path. Now you can open up Powershell and simply type in `python` to start, and usse `pip install requests`, which wi will need to do later. 
+
 Linux users - you guys know what you're doing.
 
 You will need to install the following dependencies:
