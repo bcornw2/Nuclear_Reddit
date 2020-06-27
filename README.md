@@ -20,6 +20,8 @@ You can find out how to install Python 3 by referencing the [following guide](ht
 
 ## Environment Config
 
+To actually run the script, if you are not familiar with Git or cloning Git repositories, simply copy and paste the entirety of the file above titled: `Nuclear_Reddit.py`, and paste that into a text file on your local computer. Save that text file as `Nuclear_Reddit.py`, and then run it after doing the rest of the following environment config.
+
 Configuration is easy. All you need is Python 3 installed on a Windows, Linux, or Mac computer. 
 
 MacOS already has Python3 installed by default.
