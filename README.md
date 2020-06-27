@@ -31,8 +31,10 @@ Windows users can install Python by downloading the package from here: https://w
 * So you are adding `C:/Users/$your_username/AppData/Local/Programs/Python/Python38`  and  `C:/Users/$your_username/AppData/Local/Programs/Python/Python38/Scripts/pip.exe` to your path. Now you can open up Powershell and simply type in `python` to start, and usse `pip install requests`, which wi will need to do later. 
 * **IMPORANT** - In Windows, you must allow terminal coloration. This is very easy. Open either PowerShell or CMD.exe as an administrator:
 	* From PowerShell, you can do this programmatically as follows:
+		
 		`Set-ItemProperty HKCU:\Console VirtualTerminalLevel -Type DWORD 1`
-	*From cmd.exe (also works from PowerShell):
+	* From cmd.exe (also works from PowerShell):
+		
 		`reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1`
 
 Linux users - you guys know what you're doing.
