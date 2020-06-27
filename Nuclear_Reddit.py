@@ -547,7 +547,7 @@ def main():
 
     save_account_metadata()
 
-        #getSavedPosts()
+    getSavedPosts()
         #  save_comments()
         #  save_content()
     downloadFromUrl("submissions.txt", "submission")
