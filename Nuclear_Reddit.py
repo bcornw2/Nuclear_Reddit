@@ -440,6 +440,7 @@ def deleteItAll():
             f"instead of deleting them. To cancel, enter \'CANCEL\'.{bcolors.ENDC}\n TO PROCEED, "
             f"ENTER: {bcolors.FAIL} DELETE [USERNAME]: {bcolors.ENDC}")
         uname.upper()
+
         print("uname: " + uname)
         delete_string = "DELETE " + uname.upper()
         print("delete_string " + delete_string)
