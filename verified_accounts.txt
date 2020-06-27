@@ -1,0 +1,7 @@
+##verififed accounts are saved here. They are verified once the script is able to make a post using the user-provided credentials.
+##This is the ONLY place where your password is stored. You should delete this when you are done with this program.
+
+redditaccount2366
+pass2020!
+Tff_gosmdmI89d
+_mfwmAIENFoi4nAEFNeinmlEIGqQqQol13295_FWSA
