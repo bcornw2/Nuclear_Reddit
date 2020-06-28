@@ -548,12 +548,8 @@ def main():
     #if not os.path.exists(location):
    #     os.makedirs(location)
 
-
-    #save_account_metadata()
-
-    #getSavedPosts()
-        #  save_comments()
-        #  save_content()
+    save_account_metadata()
+    getSavedPosts()
     downloadFromUrl("submissions.txt", "submission")
     print(f"{bcolors.OKGREEN}Submissions download complete.{bcolors.ENDC}")
     downloadFromUrl("comments.txt", "comment")
