@@ -61,7 +61,9 @@ def getImages():
     submissions = reddit.user.me().submissions.new(limit=None)
     for submission in submissions:
         if submission.url.endswith(('jpg', 'png', 'jpeg')):
+            filetype = submission.url[-3:]
             fname = submission.title.replace(" ", "_")
+            fname = fname[:20] + "." + filetype
             if not os.path.isfile(os.path.join(path, fname)):
                 images.append({'url': submission.url, 'fname': fname})
                 go += 1
@@ -119,7 +121,7 @@ def downloadFromUrl(filename, object_type):
                         continue
                     try:
                         submissions_to_delete.append(object['id'])
-                        handle.write("\n\nScore: " + str(object['score']))
+                        handle.write("\n\n=========================\nScore: " + str(object['score']))
                         handle.write(" : ")
                         handle.write(
                             datetime.datetime.fromtimestamp(object['created_utc']).strftime("%Y-%m-%d %H:%M:%S"))
@@ -150,19 +152,21 @@ def downloadFromUrl(filename, object_type):
                         for object in objects2:
                             author = object['author']
                             text2 = object['body']
+                            text2 = text2.replace("&amp;#x200B;", "\n")
                             score = object['score']
                             handle.write("\n\t /u/" + author + " replied: (" + str(
                                 score) + ") " + text2 + "\n ----------------------")
+                        print("post saved successfully.")
                     except Exception as err:
-                        print(f"Could not print post: {object['url']}")
-                        print(traceback.format_exc())
+                        print(f"Could not print post: ") #https://www.reddit.com{object['permalink']}")
+                        print(str(err) + " - proceeding...")
         print("Saved {} {}s through {}".format(count, object_type,
                                                datetime.datetime.fromtimestamp(previous_epoch).strftime(
                                                    "%Y-%m-%d %H:%M:%S")))
     print(f"Saved {count} {object_type}s")
-    print("comments to delete: " + str(comments_to_delete))
+    print("comments to delete: " + str(len(comments_to_delete)))
     print(5 * "==============")
-    print("submissions to delete: " + str(submissions_to_delete))
+    print("submissions to delete: " + str(len(submissions_to_delete)))
 
     handle.close()
 
@@ -200,20 +204,20 @@ def saveVideos():
 
 def save_account_metadata():
     path = os.path.join(location, "nuke_metadata.txt")
-    with open(path, "a") as file:
+    with open(path, "a", encoding='utf-8') as file:
         file.write(
             " === NUCLEAR REDDIT === " + "\n" + "User: /u/" + reddit.user.me().name + "\n - Created: " + datetime.datetime.fromtimestamp(
                 reddit.user.me().created_utc).strftime('%Y-%m-%d %H:%M:%S') + "\n")
         file.write(" - Comment Karma: " + str(reddit.user.me().comment_karma) + "\n")
         file.write(" - Link Karma: " + str(reddit.user.me().link_karma) + "\n")
         file.write(
-            "\n\n\nIf you've found this software helpful, please consider sending a small BTC tip to: qq5cws5pyy47rzmah2e0pgmxq5xjy2wf0vhy8nl9ma \nAnything is appreciated.")
+            "\n\n\nIf you've found this software helpful, please consider sending a small BTC tip to: qq5cws5pyy47rzmah2e0pgmxq5xjy2wf0vhy8nl9ma \nAnything is appreciated.\n\n")
         print("writing metadata...")
 
 
 def getSavedPosts():
     path = os.path.join(location, "saved.txt")
-    with open(path, "a") as file:
+    with open(path, "a", encoding='utf-8') as file:
         file.write("\n==============================\n")
         file.write(" === Saved posts: === \n")
         count_link = 1
@@ -332,7 +336,7 @@ def testAccount(test_reddit):
         test_reddit.subreddit("nuclear_reddit").submit(title, selftext="test post to verify access")
         print(f"{bcolors.OKGREEN}Reddit account linking is successful!{bcolors.ENDC}")
         verified_accounts.append(uname)
-        with open("verified_accounts.txt", "a") as file:
+        with open("verified_accounts.txt", "a", encoding='utf-8') as file:
             file.write(uname + "\n" + passwd + "\n" + client_id + "\n" + secret + "\n")
         return True
     #  except RateLimitException as err:
@@ -403,7 +407,7 @@ def deleteItAll():
         2.) {bcolors.BOLD}Edit{bcolors.ENDC} all comments, leave all submissions intact.
         3.) {bcolors.BOLD}Delete{bcolors.ENDC} all comments, {bcolors.BOLD}delete{bcolors.ENDC} all submissions.
         4.) {bcolors.BOLD}Delete{bcolors.ENDC} all comments, leave all submissions intact.
-        5.) Exit Program.
+        5.) Exit Program. This deletes nothing. 
     
     >>: """)
     if choice_number == "1":
@@ -499,11 +503,11 @@ def deleteComments():
 
 
 def main():
-    with open("verified_accounts.txt", "a") as file:
+    with open("verified_accounts.txt", "a", encoding='utf-8') as file:
         file.write("")
     print(bcolors.OKBLUE + "Nuclear Reddit Destroyer - archives and wipes all Reddit history." + bcolors.ENDC)
     time.sleep(1)
-    with open("verified_accounts.txt", "a") as file:
+    with open("verified_accounts.txt", "a", encoding='utf-8') as file:
         file.close
     ini()
     global location
@@ -545,9 +549,9 @@ def main():
    #     os.makedirs(location)
 
 
-    save_account_metadata()
+    #save_account_metadata()
 
-    getSavedPosts()
+    #getSavedPosts()
         #  save_comments()
         #  save_content()
     downloadFromUrl("submissions.txt", "submission")
@@ -555,10 +559,10 @@ def main():
     downloadFromUrl("comments.txt", "comment")
     print(f"{bcolors.OKGREEN}Comments download complete.{bcolors.ENDC}")
     print(f"{bcolors.OKBLUE}Saving images submissions...{bcolors.ENDC}")
-    #   getImages()
+    #getImages()
     print(f"{bcolors.OKGREEN}Images saved successfully.{bcolors.ENDC}")
     print(f"{bcolors.OKBLUE}Saving videos...{bcolors.OKBLUE}")
-    #   saveVideos()
+    #saveVideos()
     print(f"{bcolors.OKGREEN}Videos saved successfully{bcolors.ENDC}")
     print(f"{bcolors.OKGREEN}submitted images download complete.{bcolors.ENDC}")
     deleteItAll()
