@@ -313,14 +313,14 @@ def ini():
         pass
     else:
         ini()
-    if (testAccount(test_reddit) or uname in verified_accounts):
+    #if (testAccount(test_reddit) or uname in verified_accounts):
         print(f"{bcolors.OKGREEN}\nContinuing...{bcolors.ENDC}")
-        initializeReddit(client_id, secret, uname, passwd)
-    else:
-        print(
-            f"{bcolors.FAIL}\n\nAccount linking has failed. You may have entered your credentials inccorectly. Please "
-            f"verify that your username, password, client ID, and secret are accurate.\n" + bcolors.ENDC)
-        ini()
+    initializeReddit(client_id, secret, uname, passwd)
+   #else:
+     #   print(
+      #      f"{bcolors.FAIL}\n\nAccount linking has failed. You may have entered your credentials inccorectly. Please "
+      #      f"verify that your username, password, client ID, and secret are accurate.\n" + bcolors.ENDC)
+      #  ini()
 
 
 def testAccount(test_reddit):
