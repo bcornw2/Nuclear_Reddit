@@ -174,7 +174,7 @@ def downloadFromUrl(filename, object_type):
 
 def saveVideos():
     path = os.path.join(location, "video_uploads")
-    redvid = Downloader()
+    redvid = Downloader(max_q=True)
     submissions = reddit.user.me().submissions.new(limit=None)
     for submission in submissions:
         if "v.redd" in submission.url:
