@@ -14,7 +14,7 @@ from pathlib import Path
 
 comments_to_delete = []
 submissions_to_delete = []
-url = "https://api.pushshift.io/reddit/{}/search/?limit=1000&soft=desc&author={}&before="
+url = "https://api.pushshift.io/reddit/{}/search/?limit=1000&sort=desc&author={}&before="
 url2 = "https://api.pushshift.io/reddit/comment/search/?link_id={}&limit=20000"
 
 start_time = datetime.datetime.utcnow()
