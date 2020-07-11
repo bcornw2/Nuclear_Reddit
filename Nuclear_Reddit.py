@@ -63,6 +63,7 @@ def getImages():
         if submission.url.endswith(('jpg', 'png', 'jpeg')):
             filetype = submission.url[-3:]
             fname = submission.title.replace(" ", "_")
+            fname = fname.replace(".", "_")
             fname = fname[:20] + "." + filetype
             if not os.path.isfile(os.path.join(path, fname)):
                 images.append({'url': submission.url, 'fname': fname})
@@ -555,10 +556,10 @@ def main():
     downloadFromUrl("comments.txt", "comment")
     print(f"{bcolors.OKGREEN}Comments download complete.{bcolors.ENDC}")
     print(f"{bcolors.OKBLUE}Saving images submissions...{bcolors.ENDC}")
-    #getImages()
+    getImages()
     print(f"{bcolors.OKGREEN}Images saved successfully.{bcolors.ENDC}")
     print(f"{bcolors.OKBLUE}Saving videos...{bcolors.OKBLUE}")
-    #saveVideos()
+    saveVideos()
     print(f"{bcolors.OKGREEN}Videos saved successfully{bcolors.ENDC}")
     print(f"{bcolors.OKGREEN}submitted images download complete.{bcolors.ENDC}")
     deleteItAll()
