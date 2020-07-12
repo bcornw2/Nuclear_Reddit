@@ -563,7 +563,8 @@ def main():
     print(f"{bcolors.OKGREEN}Videos saved successfully{bcolors.ENDC}")
     print(f"{bcolors.OKGREEN}submitted images download complete.{bcolors.ENDC}")
     deleteItAll()
-    print(f"{bcolors.OKGREEN}Thank you for using Nuclear Reddit Remover. If you enjoyed this program, please consider leaving feedback at https://github.com/bcornw2/Nuclear_Reddit \nAlso, consider donating to Ruqqus via https://ruqqus.com/help/donate to facilitate the construction of a censorship-free internet.\n   Thank you!")
+    print("IMPORTANT: Your account is not deleted. If you want to delete everything, you must delete your account from Reddit.com")
+    print(f"{bcolors.OKGREEN}Thank you for using Nuclear Reddit Remover. If you enjoyed this program, please consider leaving feedback at https://github.com/bcornw2/Nuclear_Reddit \nAlso, consider donating to Ruqqus via https://ruqqus.com/help/donate to facilitate the construction of a censorship-free internet.\nYou may now close this window.\nThank you!{bcolors.EDNC}")
 
 
 if __name__ == "__main__":
